@@ -502,9 +502,10 @@ class Country {
       this.generateList(this.dataCities, this.defaultList, 3);
     });
     this.input.addEventListener("input", () => {
-      //if (this.input.value) {
       this.filterCities(this.input.value);
-      //}
+    });
+    this.linkButton.addEventListener("click", () => {
+          this.input.value = "";
     });
   }
 }
@@ -518,5 +519,3 @@ const country = new Country(
 
 country.init();
 country.handler();
-
-// -----------------------------------
