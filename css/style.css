@@ -173,6 +173,15 @@ body .main .input-cities label {
   cursor: default;
 }
 
+.spinner {
+  position: absolute;
+  width: 40px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  display: none;
+}
+
 #select-cities ~ .focus-border:before,
 #select-cities ~ .focus-border:after {
   content: "";

@@ -337,10 +337,30 @@ class Country {
     this.selectedList = document.querySelector(selectedList);
     this.autocompleteList = document.querySelector(autocompleteList);
     this.linkButton = document.querySelector(".button");
-    this.dataCities = data.EN;
+    this.dataCities = [];
+  }
+
+  getData(lang) {
+    const spinner = document.querySelector(".spinner");
+    spinner.style.display = "block";
+    fetch(`http://localhost:3000/${lang}`)
+      .then((r) => {
+        return r.json();
+      })
+      .then((data) => {
+        setTimeout(() => {
+          this.dataCities = data;
+          country.init();
+          country.handler();
+          spinner.style.display = "none";
+          this.input.disabled = false;
+        }, 1000);
+      })
+      .catch((e) => console.log("Error, no data"));
   }
 
   generateList(items, list, amountOfCitiesToShow) {
+    console.log(this.dataCities);
     const col = document.createElement("div");
     col.className = "dropdown-lists__col";
     list.append(col);
@@ -376,15 +396,43 @@ class Country {
     const selectedCountry = this.dataCities.filter(
       (item) => item.country === country
     );
+
     this.selectedList.textContent = "";
+    this.selectedList.style.left = "-100%";
     this.selectedList.style.display = "block";
+    this.selectedList.style.position = "relative";
     this.defaultList.style.display = "none";
+    this.slide(this.selectedList, true);
+
     this.generateList(selectedCountry, this.selectedList, Infinity);
   }
 
+  // slide animation
+  slide(list, left) {
+    let interval,
+      count = 25;
+    const slider = () => {
+      interval = requestAnimationFrame(slider);
+      count--;
+      if (count >= 0) {
+        if (left) {
+          list.style.left = count * 4 + "%";
+        } else {
+          list.style.right = count * 4 + "%";
+        }
+      } else {
+        cancelAnimationFrame(interval);
+      }
+    };
+    requestAnimationFrame(slider);
+  }
+
   unselect() {
-    this.selectedList.style.display = "none";
+    this.defaultList.style.position = "relative";
+    this.defaultList.style.right = "-100%";
     this.defaultList.style.display = "block";
+    this.selectedList.style.display = "none";
+    this.slide(this.defaultList, false);
   }
 
   handler() {
@@ -505,7 +553,7 @@ class Country {
       this.filterCities(this.input.value);
     });
     this.linkButton.addEventListener("click", () => {
-          this.input.value = "";
+      this.input.value = "";
     });
   }
 }
@@ -517,5 +565,4 @@ const country = new Country(
   ".dropdown-lists__list--autocomplete"
 );
 
-country.init();
-country.handler();
+country.getData("EN");
